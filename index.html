@@ -877,7 +877,7 @@
                             <div id="selectedTemplateMeta" class="selected-template-meta"></div>
                             <div id="prompt-form-container" class="form-section"></div>
                             <div class="output-head">
-                                <h3>生成結果</h3>
+                                <h3>生成結果（角色 / 情境 / 期望）</h3>
                                 <div class="output-toolbar">
                                     <button id="copyBtn" class="btn-tool primary" type="button"><i class="bi bi-clipboard"></i>複製</button>
                                     <button id="resetBtn" class="btn-tool" type="button"><i class="bi bi-eraser"></i>清空</button>
@@ -7267,6 +7267,70 @@ SOP名稱：<<<{sop_title}>>>
             `);
         };
 
+        const getDefaultRole = (template) => {
+            const roleMap = {
+                '人資': '你是一位資深人力資源顧問，熟悉招募、績效、培訓、員工關係與組織發展，能產出可落地的人資文件與建議。',
+                '企劃': '你是一位資深企業企劃與專案管理顧問，熟悉商業計畫、專案規劃、營運策略與跨部門溝通。',
+                '培訓': '你是一位資深企業培訓設計顧問，熟悉課程設計、成人學習、工作坊引導與培訓成效評估。',
+                '實體店家': '你是一位資深實體店經營與零售顧問，熟悉門市營運、會員經營、促銷活動、服務流程與商圈競爭。',
+                '市場分析': '你是一位資深市場研究與策略分析顧問，熟悉產業分析、競爭分析、消費者洞察與商業可行性評估。',
+                '政府': '你是一位熟悉政府計畫、公共政策與公部門溝通的資深顧問，能以正式、清楚且可執行的方式撰寫文件。',
+                '業務': '你是一位資深 B2B 業務開發與銷售管理顧問，熟悉客戶開發、需求訪談、提案、談判與售後經營。',
+                '活動': '你是一位資深活動企劃與專案執行顧問，熟悉活動設計、現場流程、風險管理、贊助開發與成效評估。',
+                '行政': '你是一位資深行政管理與總務營運顧問，熟悉制度建立、採購、文件管理、差旅、資產與辦公室服務流程。',
+                '行銷': '你是一位資深品牌行銷與內容策略顧問，熟悉社群、廣告、SEO、會員經營、品牌定位與行銷成效分析。',
+                '醫美': '你是一位熟悉醫美診所營運、諮詢、行銷與客戶關係管理的資深顧問，並注意醫療廣告與個資合規。',
+                '長照': '你是一位資深長照服務、機構管理與照護品質顧問，熟悉照護計畫、評鑑、家屬溝通與跨專業協作。',
+                '會計財務': '你是一位資深會計財務顧問，熟悉財務報表、管理會計、稅務檢核、內控制度、資金管理與審計底稿。'
+            };
+            return roleMap[template.category] || `你是一位熟悉「${template.category}」領域的資深顧問，能依使用者提供的資料完成「${template.name}」並產出可直接使用的內容。`;
+        };
+
+        const normalizeRoleLine = (line) => {
+            const roleOnly = line
+                .replace(/(，|,)\s*(請|依照|根據|協助|為|針對|設計|撰寫|建立|產出|制定|提出|分析|輸出).*/u, '')
+                .replace(/[。.]$/u, '')
+                .trim();
+            return roleOnly ? `${roleOnly}。` : '';
+        };
+
+        const extractRole = (template, promptText) => {
+            const explicitRole = promptText
+                .split('\n')
+                .map((line) => line.trim())
+                .find((line) => /^(你是|你是一位|請扮演|請以|請擔任|你是一名)/.test(line) && line.length <= 180);
+            return explicitRole ? normalizeRoleLine(explicitRole) : getDefaultRole(template);
+        };
+
+        const formatPromptWithRce = (template, promptText, fieldValues) => {
+            const roleText = extractRole(template, promptText);
+            const fieldSummary = fieldValues.length
+                ? fieldValues.map((field) => `- ${field.label}：${field.value || '（未提供）'}`).join('\n')
+                : '- （此模板未設定輸入欄位）';
+
+            return `一、角色（Role）
+${roleText}
+
+二、情境（Context）
+任務類型：${template.category} / ${template.name}
+需求原因：我需要快速產出一份可直接用於實際工作、溝通、提案、報告或內部流程的內容。
+使用場景：請依照下方資料與任務說明，協助我完成高品質初稿。
+
+使用者提供資料：
+${fieldSummary}
+
+任務背景與補充說明：
+${promptText.trim()}
+
+三、期望（Expectation）
+請依照以下方式回答：
+1. 使用繁體中文，語氣專業、清楚、可直接交付。
+2. 嚴格遵循「任務背景與補充說明」中指定的輸出格式、段落、表格、字數、限制與注意事項。
+3. 如果資訊不足，請先列出合理假設，再完成初稿；不要只回覆「資料不足」。
+4. 內容要具體、有條理，優先使用條列、表格、步驟、範例或模板呈現。
+5. 避免空泛建議，請讓答案可以直接複製、修改或交付使用。`;
+        };
+
         const updatePrompt = () => {
             const template = templates[selectedTemplateId];
             if (!template) {
@@ -7275,12 +7339,18 @@ SOP名稱：<<<{sop_title}>>>
             }
 
             let promptText = template.template;
-            $('#prompt-form-container .prompt-input').each(function() {
-                const fieldId = $(this).attr('data-field-id');
-                const value = $(this).val() || $(this).attr('placeholder') || '';
+            const fieldValues = template.structure.map((field, index) => {
+                const input = $(`#templateField_${index}`);
+                const fieldId = field.id || '';
+                const value = input.val() || input.attr('placeholder') || '';
                 promptText = promptText.replace(new RegExp(`<<<\\{${escapeRegex(fieldId)}\\}>>>`, 'g'), value);
+                return {
+                    id: fieldId,
+                    label: field.label || fieldId || `欄位 ${index + 1}`,
+                    value
+                };
             });
-            $('#output').text(promptText);
+            $('#output').text(formatPromptWithRce(template, promptText, fieldValues));
         };
 
         const buildForm = (templateId) => {
