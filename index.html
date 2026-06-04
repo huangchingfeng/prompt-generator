@@ -305,6 +305,35 @@
             gap: 8px;
             margin: 0 0 14px;
         }
+        .axis-toggle {
+            display: flex;
+            gap: 4px;
+            background: #eef2f7;
+            padding: 4px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+        .axis-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            border-radius: 999px;
+            padding: 9px 8px;
+            font-weight: 800;
+            font-size: 0.92rem;
+            color: var(--muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .axis-btn.active {
+            background: #fff;
+            color: var(--primary-blue);
+            box-shadow: 0 1px 3px rgba(16, 24, 40, 0.14);
+        }
         .filter-btn {
             border: 1px solid var(--line);
             background: #fff;
@@ -497,6 +526,103 @@
             margin: 0;
             color: #475467;
             font-weight: 700;
+        }
+
+        /* 需求推薦 */
+        .recommender {
+            background: linear-gradient(135deg, var(--soft-blue), var(--soft-green));
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        .recommender-head h3 {
+            margin: 0 0 4px;
+            font-size: 1.12rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .recommender-head p { margin: 0 0 12px; color: var(--muted); }
+        .recommender-input {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+        .recommender-input textarea {
+            flex: 1 1 320px;
+            min-height: 48px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            font-weight: 600;
+            resize: vertical;
+        }
+        .recommender-input textarea:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.2rem rgba(11, 107, 203, 0.12);
+            outline: none;
+        }
+        .recommender-input .btn-main { flex: 0 0 auto; white-space: nowrap; }
+        .recommend-results { display: none; margin-top: 14px; }
+        .recommend-results.show { display: block; }
+        .reco-title {
+            font-weight: 900;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .reco-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            transition: border-color .2s, transform .2s, background .2s;
+        }
+        .reco-item:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-1px);
+            background: #fbfdff;
+        }
+        .reco-item-main { display: flex; flex-direction: column; gap: 4px; }
+        .reco-item-name { font-weight: 900; color: var(--ink); line-height: 1.35; }
+        .reco-item-cat { font-size: .82rem; font-weight: 800; color: var(--muted); }
+        .reco-item-go { flex: 0 0 auto; font-weight: 900; color: var(--primary-blue); white-space: nowrap; }
+        .reco-empty {
+            border: 1px dashed var(--line);
+            background: #fff;
+            color: var(--muted);
+            border-radius: var(--radius);
+            padding: 14px;
+            text-align: center;
+        }
+
+        /* 可編輯的生成結果 */
+        textarea.output-container {
+            width: 100%;
+            display: block;
+            height: 320px;
+            max-height: none;
+            resize: vertical;
+        }
+        .output-hint {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: .86rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .brand-band {
@@ -804,8 +930,8 @@
             <div class="section-inner hero-grid">
                 <div>
                     <div class="hero-kicker"><i class="bi bi-stars"></i> 企業 AI 工作提示詞庫</div>
-                    <h1 class="hero-title">276 個 AI 提示詞模板，一次整理成可直接使用的工作台</h1>
-                    <p class="hero-copy">276 個實戰提示詞模板，依產業與職能快速生成可直接使用的 AI 指令。從人資、行銷、長照到會計財務，先選情境，再填資料，最後複製到 ChatGPT、Claude 或 Gemini。</p>
+                    <h1 class="hero-title">300+ 個 AI 提示詞模板，依「產業 × 部門」雙軸快速找到可用指令</h1>
+                    <p class="hero-copy">300+ 個實戰提示詞模板，可依產業或部門雙軸瀏覽，也能直接描述需求讓 AI 推薦。從保險、長照、業務到會計財務，先選情境，再填資料，最後複製到 ChatGPT、Claude 或 Gemini。</p>
                     <div class="hero-actions">
                         <a href="#tool" class="btn-main"><i class="bi bi-lightning-charge-fill"></i>開始使用提示詞產生器</a>
                         <a href="#about" class="btn-quiet"><i class="bi bi-person-workspace"></i>了解企業 AI 培訓/陪跑</a>
@@ -858,6 +984,18 @@
                         </div>
                     </div>
 
+                    <div class="recommender">
+                        <div class="recommender-head">
+                            <h3><i class="bi bi-magic"></i> 不知道用哪個？描述你的需求，幫你推薦</h3>
+                            <p>用一句話說明你想完成的工作，例如「我要寫一封開發新客戶的信」「幫員工排班表」「整理會議記錄重點」。</p>
+                        </div>
+                        <div class="recommender-input">
+                            <textarea id="needInput" rows="2" placeholder="描述你的需求或想完成的工作，按 Enter 推薦…"></textarea>
+                            <button id="recommendBtn" class="btn-main" type="button"><i class="bi bi-stars"></i> 推薦模板</button>
+                        </div>
+                        <div id="recommendResults" class="recommend-results" aria-live="polite"></div>
+                    </div>
+
                     <div class="tool-grid">
                         <aside class="template-sidebar" aria-label="模板選擇">
                             <div class="panel-label">搜尋模板</div>
@@ -865,7 +1003,12 @@
                                 <i class="bi bi-search"></i>
                                 <input id="templateSearch" class="form-control" type="search" placeholder="輸入關鍵字，例如：發票、面試、長照、會計" autocomplete="off">
                             </div>
-                            <div class="panel-label">分類</div>
+                            <div class="panel-label">瀏覽方式</div>
+                            <div id="axis-toggle" class="axis-toggle" role="tablist" aria-label="瀏覽方式">
+                                <button class="axis-btn active" type="button" data-axis="department" aria-pressed="true"><i class="bi bi-people"></i> 依部門</button>
+                                <button class="axis-btn" type="button" data-axis="industry" aria-pressed="false"><i class="bi bi-buildings"></i> 依產業</button>
+                            </div>
+                            <div class="panel-label" id="axisChipLabel">部門分類</div>
                             <div id="category-filters" class="category-strip" aria-label="模板分類"></div>
                             <label class="panel-label" for="templateSelector">下拉選單備用</label>
                             <select id="templateSelector" class="form-select template-select-fallback" aria-label="模板下拉選單"></select>
@@ -884,7 +1027,8 @@
                                     <button id="exampleBtn" class="btn-tool" type="button"><i class="bi bi-magic"></i>重新填寫範例</button>
                                 </div>
                             </div>
-                            <div id="output" class="output-container">請先選擇模板，並在欄位填入資料。</div>
+                            <textarea id="output" class="output-container" spellcheck="false">請先選擇模板，並在欄位填入資料。</textarea>
+                            <div class="output-hint"><i class="bi bi-pencil-square"></i> 生成的提示詞可以直接在上面修改文字，再按「複製」帶走。</div>
                             <div id="copyStatus" class="copy-status" aria-live="polite"></div>
                         </section>
                     </div>
@@ -7119,9 +7263,16 @@ SOP名稱：<<<{sop_title}>>>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     $(document).ready(function() {
-        const templates = {};
-        const categories = new Set();
-        let currentCategory = 'all';
+        const TEMPLATES_URL = 'prompt-templates.json';
+
+        let templates = {};
+        let allTemplates = [];
+        let industries = [];
+        let departments = [];
+        let industryCounts = {};
+        let departmentCounts = {};
+        let currentAxis = 'department';   // 'department' | 'industry'
+        let currentTag = 'all';
         let currentSearch = '';
         let selectedTemplateId = null;
         let toastTimer = null;
@@ -7137,53 +7288,128 @@ SOP名稱：<<<{sop_title}>>>
         const escapeRegex = (value) => String(value ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const normalize = (value) => String(value ?? '').trim().toLowerCase();
 
-        $('script[type="text/template-data"]').each(function(index) {
-            const id = 'template_' + index;
-            try {
-                const content = $(this).text().trim().split('---PROMPT---');
-                if (content.length < 2) return;
-                const header = JSON.parse(content[0]);
-                const prompt = content.slice(1).join('---PROMPT---').trim();
-                const category = header.category || '未分類';
-                templates[id] = {
-                    name: header.name,
-                    structure: header.structure || [],
-                    template: prompt,
-                    category
-                };
-                categories.add(category);
-            } catch (e) {
-                console.error('Error parsing template data:', e);
-            }
-        });
-
-        const allTemplates = Object.entries(templates).map(([id, template]) => ({
-            id,
-            ...template,
-            searchText: normalize(`${template.name} ${template.category}`)
-        }));
-
-        const categoryCounts = {};
-        allTemplates.forEach((template) => {
-            categoryCounts[template.category] = (categoryCounts[template.category] || 0) + 1;
-        });
-
         const preferredOrder = ['人資', '企劃', '培訓', '實體店家', '市場分析', '政府', '業務', '活動', '行政', '行銷', '醫美', '長照', '會計財務'];
-        const sortedCategories = Array.from(categories).sort((a, b) => {
-            const orderA = preferredOrder.indexOf(a);
-            const orderB = preferredOrder.indexOf(b);
-            if (orderA !== -1 || orderB !== -1) {
-                return (orderA === -1 ? 999 : orderA) - (orderB === -1 ? 999 : orderB);
-            }
+
+        const parseInlineTemplates = () => {
+            const list = [];
+            $('script[type="text/template-data"]').each(function(index) {
+                try {
+                    const content = $(this).text().trim().split('---PROMPT---');
+                    if (content.length < 2) return;
+                    const header = JSON.parse(content[0]);
+                    const prompt = content.slice(1).join('---PROMPT---').trim();
+                    list.push({
+                        id: 'template_' + index,
+                        name: header.name || '未命名模板',
+                        category: header.category || '未分類',
+                        structure: Array.isArray(header.structure) ? header.structure : [],
+                        template: prompt
+                    });
+                } catch (e) {
+                    console.error('Error parsing template data:', e);
+                }
+            });
+            return list;
+        };
+
+        const normalizeImported = (arr) => arr
+            .filter((item) => item && (item.name || item.template))
+            .map((item, index) => ({
+                id: item.id || ('template_import_' + index),
+                name: item.name || '未命名模板',
+                category: item.category || '未分類',
+                industry: Array.isArray(item.industry) ? item.industry : (item.industry ? [item.industry] : []),
+                department: Array.isArray(item.department) ? item.department : (item.department ? [item.department] : []),
+                structure: Array.isArray(item.structure) ? item.structure : [],
+                template: typeof item.template === 'string' ? item.template : ''
+            }));
+
+        const loadTemplates = async () => {
+            try {
+                const res = await fetch(TEMPLATES_URL, { cache: 'no-store' });
+                if (res.ok) {
+                    const json = await res.json();
+                    if (Array.isArray(json) && json.length) return normalizeImported(json);
+                }
+            } catch (e) { /* 沒有外部 JSON 就用內建模板 */ }
+            return parseInlineTemplates();
+        };
+
+        const industryOrder = ['保險', '醫美', '長照', '政府', '實體店家'];
+        const departmentOrder = ['業務', '人資', '行銷', '企劃', '行政', '會計財務', '市場分析', '培訓', '活動', '客服', '營運'];
+        const orderSorter = (orderArr) => (a, b) => {
+            const oa = orderArr.indexOf(a), ob = orderArr.indexOf(b);
+            if (oa !== -1 || ob !== -1) return (oa === -1 ? 999 : oa) - (ob === -1 ? 999 : ob);
             return a.localeCompare(b, 'zh-Hant');
-        });
+        };
+
+        const rebuildDerived = () => {
+            templates = {};
+            const indSet = new Set(), deptSet = new Set();
+            industryCounts = {};
+            departmentCounts = {};
+            allTemplates.forEach((t) => {
+                t.structure = Array.isArray(t.structure) ? t.structure : [];
+                t.industry = Array.isArray(t.industry) ? t.industry : [];
+                t.department = Array.isArray(t.department) ? t.department : [];
+                t.searchText = normalize(`${t.name} ${t.category} ${t.industry.join(' ')} ${t.department.join(' ')}`);
+                const fieldText = t.structure.map((f) => `${f.label || ''} ${f.placeholder || ''}`).join(' ');
+                t.reco = {
+                    name: normalize(t.name),
+                    category: normalize(`${t.category} ${t.industry.join(' ')} ${t.department.join(' ')}`),
+                    fields: normalize(fieldText),
+                    body: normalize(t.template)
+                };
+                templates[t.id] = t;
+                t.industry.forEach((x) => { indSet.add(x); industryCounts[x] = (industryCounts[x] || 0) + 1; });
+                t.department.forEach((x) => { deptSet.add(x); departmentCounts[x] = (departmentCounts[x] || 0) + 1; });
+            });
+            industries = Array.from(indSet).sort(orderSorter(industryOrder));
+            departments = Array.from(deptSet).sort(orderSorter(departmentOrder));
+        };
+
+        const recommend = (query) => {
+            const q = normalize(query);
+            if (!q) return [];
+            const tokens = new Set();
+            q.split(/[\s,，。、；;：:!！?？.\/\\()（）「」【】\[\]{}<>"'’”]+/).forEach((w) => {
+                if (w && w.length >= 2) tokens.add(w);
+            });
+            const compact = q.replace(/\s+/g, '');
+            for (let n = 2; n <= 4; n++) {
+                for (let i = 0; i + n <= compact.length; i++) {
+                    tokens.add(compact.slice(i, i + n));
+                }
+            }
+            const tokenList = Array.from(tokens);
+            if (!tokenList.length) return [];
+            return allTemplates.map((t) => {
+                let score = 0;
+                const matched = new Set();
+                tokenList.forEach((tok) => {
+                    if (t.reco.name.includes(tok)) { score += 6; matched.add(tok); }
+                    else if (t.reco.category.includes(tok)) { score += 4; matched.add(tok); }
+                    else if (t.reco.fields.includes(tok)) { score += 2; matched.add(tok); }
+                    else if (t.reco.body.includes(tok)) { score += 1; matched.add(tok); }
+                });
+                let lenBonus = 0;
+                matched.forEach((m) => { lenBonus += Math.max(0, m.length - 1); });
+                return { template: t, score: score + lenBonus };
+            }).filter((s) => s.score > 0)
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 5);
+        };
 
         const getFilteredTemplates = () => {
             const query = normalize(currentSearch);
-            return allTemplates.filter((template) => {
-                const categoryMatch = currentCategory === 'all' || template.category === currentCategory;
-                const searchMatch = !query || template.searchText.includes(query);
-                return categoryMatch && searchMatch;
+            // 有搜尋字 → 全站搜尋（不受軸/標籤限制）
+            if (query) {
+                return allTemplates.filter((t) => t.searchText.includes(query));
+            }
+            // 無搜尋 → 依目前的軸（部門／產業）與標籤篩選
+            return allTemplates.filter((t) => {
+                const tags = currentAxis === 'industry' ? t.industry : t.department;
+                return currentTag === 'all' ? tags.length > 0 : tags.includes(currentTag);
             });
         };
 
@@ -7203,21 +7429,36 @@ SOP名稱：<<<{sop_title}>>>
             const total = allTemplates.length;
             $('#totalTemplateCount').text(total);
             $('#heroTemplateCount').text(total);
-            $('#heroCategoryCount').text(categories.size);
+            $('#heroCategoryCount').text(industries.length + departments.length);
             $('#activeResultCount').text(`目前顯示 ${visibleCount}`);
         };
 
+        const setAxisToggleUI = () => {
+            $('#axis-toggle .axis-btn').each(function() {
+                const active = $(this).data('axis') === currentAxis;
+                $(this).toggleClass('active', active).attr('aria-pressed', active);
+            });
+            $('#axisChipLabel').text(currentAxis === 'industry' ? '產業分類' : '部門分類');
+        };
+
         const renderCategoryFilters = () => {
+            setAxisToggleUI();
             const filterContainer = $('#category-filters').empty();
+            const isInd = currentAxis === 'industry';
+            const tags = isInd ? industries : departments;
+            const counts = isInd ? industryCounts : departmentCounts;
+            const axisTotal = allTemplates.filter((t) => (isInd ? t.industry : t.department).length > 0).length;
+            const allActive = currentTag === 'all';
             filterContainer.append(`
-                <button class="filter-btn active" type="button" data-category="all" aria-pressed="true">
-                    全部顯示 <span class="template-count">(${allTemplates.length})</span>
+                <button class="filter-btn${allActive ? ' active' : ''}" type="button" data-tag="all" aria-pressed="${allActive}">
+                    全部 <span class="template-count">(${axisTotal})</span>
                 </button>
             `);
-            sortedCategories.forEach((category) => {
+            tags.forEach((tag) => {
+                const active = currentTag === tag;
                 filterContainer.append(`
-                    <button class="filter-btn" type="button" data-category="${escapeHtml(category)}" aria-pressed="false">
-                        ${escapeHtml(category)} <span class="template-count">(${categoryCounts[category]})</span>
+                    <button class="filter-btn${active ? ' active' : ''}" type="button" data-tag="${escapeHtml(tag)}" aria-pressed="${active}">
+                        ${escapeHtml(tag)} <span class="template-count">(${counts[tag] || 0})</span>
                     </button>
                 `);
             });
@@ -7361,7 +7602,7 @@ ${promptText.trim()}
         const updatePrompt = () => {
             const template = templates[selectedTemplateId];
             if (!template) {
-                $('#output').text('請先選擇模板。');
+                $('#output').val('請先選擇模板。');
                 return;
             }
 
@@ -7377,7 +7618,7 @@ ${promptText.trim()}
                     value
                 };
             });
-            $('#output').text(formatPromptWithRce(template, promptText, fieldValues));
+            $('#output').val(formatPromptWithRce(template, promptText, fieldValues));
         };
 
         const buildForm = (templateId) => {
@@ -7388,7 +7629,7 @@ ${promptText.trim()}
 
             if (!template) {
                 container.html('<div class="empty-state">請先選擇一個模板。</div>');
-                $('#output').text('請先選擇模板。');
+                $('#output').val('請先選擇模板。');
                 return;
             }
 
@@ -7446,19 +7687,54 @@ ${promptText.trim()}
             document.body.removeChild(textarea);
         };
 
-        if (allTemplates.length > 0) {
-            selectedTemplateId = allTemplates[0].id;
+        const renderRecommend = (query) => {
+            const box = $('#recommendResults');
+            if (!query || !query.trim()) {
+                box.empty().removeClass('show');
+                return;
+            }
+            const results = recommend(query);
+            if (!results.length) {
+                box.html('<div class="reco-empty"><i class="bi bi-emoji-neutral"></i> 找不到很貼近的模板。換個說法描述你的工作，或直接用上方搜尋／分類瀏覽看看。</div>').addClass('show');
+                return;
+            }
+            let html = '<div class="reco-title"><i class="bi bi-hand-index-thumb"></i> 依你的描述，建議從這幾個開始練習：</div>';
+            results.forEach(({ template }) => {
+                html += `
+                    <button class="reco-item" type="button" data-template-id="${template.id}">
+                        <span class="reco-item-main">
+                            <span class="reco-item-name">${escapeHtml(template.name)}</span>
+                            <span class="reco-item-cat">${escapeHtml(template.category)}</span>
+                        </span>
+                        <span class="reco-item-go">選這個 <i class="bi bi-arrow-right-short"></i></span>
+                    </button>`;
+            });
+            box.html(html).addClass('show');
+        };
+
+        const refreshAll = () => {
             renderCategoryFilters();
             renderResults();
+        };
 
+        const bindStaticEvents = () => {
             $('#templateSearch').on('input', function() {
                 currentSearch = $(this).val();
                 renderResults();
             });
 
+            $('#axis-toggle').on('click', '.axis-btn', function() {
+                const nextAxis = $(this).data('axis');
+                if (nextAxis === currentAxis) return;
+                currentAxis = nextAxis;
+                currentTag = 'all';
+                renderCategoryFilters();
+                renderResults();
+            });
+
             $('#category-filters').on('click', '.filter-btn', function() {
-                currentCategory = $(this).data('category');
-                $('.filter-btn').removeClass('active').attr('aria-pressed', 'false');
+                currentTag = $(this).data('tag');
+                $('#category-filters .filter-btn').removeClass('active').attr('aria-pressed', 'false');
                 $(this).addClass('active').attr('aria-pressed', 'true');
                 renderResults();
             });
@@ -7489,7 +7765,7 @@ ${promptText.trim()}
             });
 
             $('#copyBtn').on('click', async function() {
-                const text = $('#output').text();
+                const text = $('#output').val();
                 try {
                     await copyText(text);
                     const button = $(this);
@@ -7501,11 +7777,43 @@ ${promptText.trim()}
                     showStatus('複製失敗，請手動選取文字複製。');
                 }
             });
-        } else {
-            renderCounts(0);
-            $('#category-filters').html('<div class="empty-state">目前沒有可用模板。</div>');
-            buildForm(null);
-        }
+
+            const runRecommend = () => renderRecommend($('#needInput').val());
+            $('#recommendBtn').on('click', runRecommend);
+            $('#needInput').on('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runRecommend(); }
+            });
+            $('#recommendResults').on('click', '.reco-item', function() {
+                const id = $(this).data('template-id');
+                const picked = templates[id];
+                currentSearch = '';
+                currentTag = 'all';
+                if (picked && picked.department && picked.department.length) currentAxis = 'department';
+                else if (picked && picked.industry && picked.industry.length) currentAxis = 'industry';
+                $('#templateSearch').val('');
+                refreshAll();
+                syncActiveTemplate(id);
+                const wp = document.querySelector('.work-panel');
+                if (wp) wp.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        };
+
+        const boot = async () => {
+            allTemplates = await loadTemplates();
+            rebuildDerived();
+            bindStaticEvents();
+            if (allTemplates.length > 0) {
+                selectedTemplateId = allTemplates[0].id;
+                renderCategoryFilters();
+                renderResults();
+            } else {
+                renderCounts(0);
+                $('#category-filters').html('<div class="empty-state">目前沒有可用模板。</div>');
+                buildForm(null);
+            }
+        };
+
+        boot();
 
         $('a[href^="#"]').on('click', function(event) {
             const target = $(this.getAttribute('href'));
