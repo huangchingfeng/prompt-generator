@@ -1106,7 +1106,7 @@
                 </div>
             </div>
         </div>
-        <section id="tool" class="band tool-band">
+        <section id="tool" class="band tool-band" style="display:none">
             <div class="section-inner">
                 <div class="tool-shell">
                     <div class="tool-header">
@@ -1321,7 +1321,7 @@
           $$('.cz-mode').forEach(b=> b.addEventListener('click', ()=>{
             const m = b.dataset.mode;
             $$('.cz-mode').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b);});
-            const sec = {text:'#tool', image:'#chutu', research:'#research'};
+            const sec = {text:'#txt', image:'#chutu', research:'#research'};
             Object.keys(sec).forEach(k=>{ const el=$(sec[k]); if(el) el.style.display=(k===m)?'':'none'; });
             if(m==='image' && !inited){ inited=true; renderTabs(); renderGrid(); }
             if(m==='research' && window.__rsInit){ window.__rsInit(); }
@@ -1680,6 +1680,170 @@
           $('#rsClose').addEventListener('click', closeModal);
           overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
           document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.classList.contains('open')) closeModal(); });
+        })();
+        </script>
+
+
+
+<style id="txt-style">
+.txt-meta{font-size:.78rem;color:var(--muted);line-height:1.5;margin:2px 0 12px}
+#txt .cz-cardbody{padding:14px 15px}
+</style>
+
+        <section id="txt" class="band tool-band">
+            <div class="section-inner">
+                <div class="tool-shell">
+                    <div class="tool-header">
+                        <div>
+                            <h2>📝 文字提示詞</h2>
+                            <p>選分類 → 點一張卡 → 填角色／情境／期望 → 一鍵複製,貼到 ChatGPT／Claude／Gemini 就能用。</p>
+                        </div>
+                        <div class="search-field" style="max-width:260px">
+                            <i class="bi bi-search"></i>
+                            <input id="txtSearch" class="form-control" type="search" placeholder="搜尋模板…" autocomplete="off">
+                        </div>
+                    </div>
+                    <div id="txtTabs" class="cz-tabs"></div>
+                    <div id="txtGrid" class="cz-grid"></div>
+                    <div class="tool-cta">
+                        <p>想把這些變成公司專屬 SOP 或部門工具包?</p>
+                        <a href="#contact" class="btn-quiet"><i class="bi bi-arrow-right-short"></i>討論企業導入</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="cz-overlay" id="txtOverlay">
+          <div class="cz-modal" id="txtModal" role="dialog" aria-modal="true" aria-labelledby="txtTitle">
+            <div class="cz-mhead">
+              <div><span class="cz-mcat" id="txtCat"></span><h3 id="txtTitle"></h3></div>
+              <button class="cz-x" id="txtClose" aria-label="關閉">✕</button>
+            </div>
+            <div class="cz-mbody">
+              <div>
+                <p class="cz-hint">填入你的狀況(越具體 AI 給的越準),右邊會即時組好提示詞。空白的欄位會留成〔提示〕,你也可以複製後再改。</p>
+                <div id="txtFields"></div>
+              </div>
+              <div>
+                <div class="cz-out a">
+                  <div class="cz-ohead"><span class="cz-ot">📝 提示詞(自動組好)</span><span class="cz-otag" id="txtTag">貼進 ChatGPT／Claude／Gemini</span></div>
+                  <div class="cz-pre" id="txtOut"></div>
+                </div>
+                <button class="cz-copy primary" id="txtCopy" style="width:calc(100% - 24px)">📋 複製提示詞</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cz-toastwrap" id="txtToast" aria-live="polite"></div>
+
+        <script>
+        (function(){
+          "use strict";
+          const $ = (s,r)=> (r||document).querySelector(s);
+          const $$ = (s,r)=> [...(r||document).querySelectorAll(s)];
+          const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+          const ICON={'保險':'💼','業務':'📞','客服':'🎧','人資':'👥','行銷':'📣','會計財務':'💰','市場分析':'📊','企劃':'📋','培訓':'🎓','行政':'🗂️','經營管理':'🧭','法務':'⚖️','採購':'🛒','通用':'🔧','資訊':'💻','客戶關係':'🤝','活動':'🎪','營運':'⚙️','政府':'🏛️'};
+          const icon = c => ICON[c] || '📝';
+          let TXT=[], activeCat='全部', kw='', cur=null, lastFocus=null, inited=false;
+
+          window.__txtInit = function(){ if(inited) return; inited=true; load(); };
+          async function load(){
+            try{
+              const r = await fetch('prompt-templates.json', {cache:'no-store'});
+              TXT = await r.json();
+              TXT.forEach((t,i)=>{ if(!t.id) t.id='tpl-'+i; });
+              renderTabs(); renderGrid();
+            }catch(e){ $('#txtGrid').innerHTML='<div class="cz-empty">模板載入失敗,請重新整理。</div>'; }
+          }
+          const visible = ()=>{
+            let list = TXT;
+            if(activeCat!=='全部') list = list.filter(t=>t.category===activeCat);
+            if(kw){ const k=kw.toLowerCase(); list = list.filter(t=>(t.name+' '+t.category+' '+(t.template||'')).toLowerCase().includes(k)); }
+            return list;
+          };
+          function renderTabs(){
+            const cats = ['全部', ...new Set(TXT.map(t=>t.category))];
+            $('#txtTabs').innerHTML = cats.map(c=>
+              `<button class="cz-tab${c===activeCat?' active':''}" data-cat="${esc(c)}">${esc(c)}<span style="opacity:.6;margin-left:5px">${c==='全部'?TXT.length:TXT.filter(t=>t.category===c).length}</span></button>`
+            ).join('');
+            $$('.cz-tab', $('#txtTabs')).forEach(b=> b.addEventListener('click', ()=>{ activeCat=b.dataset.cat; renderTabs(); renderGrid(); }));
+          }
+          function renderGrid(){
+            const list = visible();
+            if(!list.length){ $('#txtGrid').innerHTML='<div class="cz-empty">找不到符合的模板,換個分類或關鍵字。</div>'; return; }
+            $('#txtGrid').innerHTML = list.map(t=>{
+              const desc = String(t.template||'').replace(/<<<\{[^}]+\}>>>/g,'⋯').split(/[\n。!?]/)[0].slice(0,52);
+              return `<button class="cz-card" data-id="${esc(t.id)}">
+                <div class="cz-cardbody">
+                  <span class="cz-cardcat">${icon(t.category)} ${esc(t.category)}</span>
+                  <span class="cz-cardtitle">${esc(t.name)}</span>
+                  <span class="cz-cardcase">${esc(desc)}…</span>
+                </div></button>`;
+            }).join('');
+            $$('.cz-card', $('#txtGrid')).forEach(el=> el.addEventListener('click', ()=> openModal(el.dataset.id)));
+          }
+
+          const overlay = $('#txtOverlay');
+          function autoGrow(ta){ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,180)+'px'; }
+          function openModal(id){
+            const t = TXT.find(x=>x.id===id); if(!t) return;
+            cur=t; lastFocus=document.activeElement;
+            $('#txtCat').textContent = icon(t.category)+' '+t.category;
+            $('#txtTitle').textContent = t.name;
+            const fields = Array.isArray(t.structure)? t.structure : [];
+            const fw = $('#txtFields');
+            if(!fields.length){
+              fw.innerHTML = '<p style="font-size:.85rem;color:var(--muted)">這個模板不用填空,直接複製右邊使用即可。</p>';
+            }else{
+              fw.innerHTML = fields.map(f=>
+                `<div class="cz-field">
+                  <div class="cz-flabel"><span>${esc(f.label||f.id)}</span></div>
+                  ${ f.type==='textarea'
+                     ? `<textarea id="txf_${esc(f.id)}" placeholder="${esc(f.placeholder||'')}"></textarea>`
+                     : `<textarea id="txf_${esc(f.id)}" rows="1" placeholder="${esc(f.placeholder||'')}"></textarea>` }
+                </div>`).join('');
+              fields.forEach(f=>{
+                const ta=$('#txf_'+CSS.escape(f.id), fw);
+                autoGrow(ta);
+                ta.addEventListener('input', ()=>{ autoGrow(ta); build(); });
+              });
+            }
+            build();
+            overlay.classList.add('open'); document.body.style.overflow='hidden';
+            setTimeout(()=>$('#txtClose').focus(),50);
+          }
+          function build(){
+            if(!cur) return;
+            let s = String(cur.template||'');
+            const fields = Array.isArray(cur.structure)? cur.structure : [];
+            fields.forEach(f=>{
+              const val = ($('#txf_'+CSS.escape(f.id))?.value||'').trim();
+              s = s.split('<<<{'+f.id+'}>>>').join(val || ('〔'+(f.label||f.id)+'〕'));
+            });
+            // 清掉任何殘留佔位語法
+            s = s.replace(/<<<\{[^}]+\}>>>/g,'');
+            $('#txtOut').textContent = s;
+          }
+          function closeModal(){ overlay.classList.remove('open'); document.body.style.overflow=''; cur=null; if(lastFocus)lastFocus.focus(); }
+          function doCopy(text){
+            const ok=()=>toast('已複製,去 ChatGPT／Claude／Gemini 貼上');
+            if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(text).then(ok).catch(fb); } else fb();
+            function fb(){ try{ const t=document.createElement('textarea'); t.value=text; t.style.position='fixed'; t.style.top='-1000px'; document.body.appendChild(t); t.focus(); t.select(); document.execCommand('copy'); document.body.removeChild(t); ok(); }catch(e){ toast('自動複製失敗,請手動選取'); } }
+          }
+          function toast(text){
+            const w=$('#txtToast'); const el=document.createElement('div');
+            el.className='cz-toast'; el.innerHTML='<span>✅</span><span>'+esc(text)+'</span>';
+            w.appendChild(el); requestAnimationFrame(()=>el.classList.add('show'));
+            setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),300); },3000);
+          }
+          $('#txtCopy').addEventListener('click', ()=> cur && doCopy($('#txtOut').textContent));
+          $('#txtClose').addEventListener('click', closeModal);
+          overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
+          document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.classList.contains('open')) closeModal(); });
+          const sb=$('#txtSearch'); if(sb) sb.addEventListener('input', ()=>{ kw=sb.value.trim(); renderGrid(); });
+
+          // 文字是預設模式 → 直接初始化
+          window.__txtInit();
         })();
         </script>
 
