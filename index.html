@@ -1013,7 +1013,7 @@
         <a class="ae-item" data-key="export-sales-ai" href="https://huangchingfeng.github.io/export-sales-ai/?ref=ecobar&from=prompt-generator" title="306 題・18 類"><span class="ae-emo" aria-hidden="true">🌐</span>B2B 外銷業務 AI</a>
         <a class="ae-item" data-key="insurance-sales-ai" href="https://huangchingfeng.github.io/insurance-sales-ai/?ref=ecobar&from=prompt-generator" title="306 題・20 類"><span class="ae-emo" aria-hidden="true">🛡️</span>保險業務 AI</a>
         <a class="ae-item" data-key="hakka-podcast-ai-course" href="https://huangchingfeng.github.io/hakka-podcast-ai-course/?ref=ecobar&from=prompt-generator" title="15 題・4 類"><span class="ae-emo" aria-hidden="true">🎙️</span>客家 Podcast AI</a>
-        <a class="ae-item" data-key="insurance-image-prompts" href="https://huangchingfeng.github.io/insurance-image-prompts/?ref=ecobar&from=prompt-generator" title="280 圖・10 類"><span class="ae-emo" aria-hidden="true">🎨</span>保險做圖提示詞庫</a>
+        <a class="ae-item" data-key="insurance-image-prompts" href="https://huangchingfeng.github.io/insurance-image-prompts/?ref=ecobar&from=prompt-generator" title="16 圖・7 類"><span class="ae-emo" aria-hidden="true">🎨</span>保險做圖提示詞庫</a>
       </div>
       <span class="ae-fade" aria-hidden="true"></span>
     </div>
@@ -1102,6 +1102,7 @@
                         <button class="cz-mode active" type="button" data-mode="text" aria-pressed="true">📝 文字提示詞<span class="cz-mode-sub">1087 題 · 貼 ChatGPT/Claude/Gemini</span></button>
                         <button class="cz-mode" type="button" data-mode="image" aria-pressed="false">🎨 出圖提示詞<span class="cz-mode-sub">118 張卡 · 貼 NotebookLM/Gemini 出資訊圖表</span></button>
                         <button class="cz-mode" type="button" data-mode="research" aria-pressed="false">🔍 研究找資料<span class="cz-mode-sub">122 張卡 · 貼 Perplexity/Gemini Deep Research</span></button>
+                        <button class="cz-mode" type="button" data-mode="opt" aria-pressed="false">✨ 一鍵優化<span class="cz-mode-sub">想法丟進來 · AI 幫你補成專業提示詞</span></button>
                     </div>
                 </div>
             </div>
@@ -1200,7 +1201,6 @@
 .cz-card:hover{border-color:var(--primary-blue);box-shadow:var(--shadow);transform:translateY(-2px)}
 .cz-thumb{aspect-ratio:4/3;background:#f1f5fa;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .cz-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.cz-thumbph{display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:2.6rem;background:linear-gradient(135deg,#eef3f8,#f7fafc);color:var(--muted)}
 .cz-cardbody{padding:12px 13px}
 .cz-cardcat{font-size:.74rem;font-weight:800;color:var(--primary-blue);display:block;margin-bottom:4px}
 .cz-cardtitle{font-weight:900;color:var(--ink);line-height:1.35;display:block;margin-bottom:5px}
@@ -1322,7 +1322,7 @@
           $$('.cz-mode').forEach(b=> b.addEventListener('click', ()=>{
             const m = b.dataset.mode;
             $$('.cz-mode').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b);});
-            const sec = {text:'#txt', image:'#chutu', research:'#research'};
+            const sec = {text:'#txt', image:'#chutu', research:'#research', opt:'#opt'};
             Object.keys(sec).forEach(k=>{ const el=$(sec[k]); if(el) el.style.display=(k===m)?'':'none'; });
             if(m==='image' && !inited){ inited=true; renderTabs(); renderGrid(); }
             if(m==='research' && window.__rsInit){ window.__rsInit(); }
@@ -1347,7 +1347,7 @@
             const list = activeCat==='全部'? data() : data().filter(c=>c.category===activeCat);
             $('#czGrid').innerHTML = list.map(c=>
               `<button class="cz-card" data-set="${c._set}" data-num="${c.num}">
-                <div class="cz-thumb"><img src="${c.img}" alt="${esc(c.card)}範例圖" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="cz-thumbph">${esc(c.icon||'🎨')}</span></div>
+                <div class="cz-thumb"><img src="${c.img}" alt="${esc(c.card)}範例圖" loading="lazy" onerror="this.style.display='none'"></div>
                 <div class="cz-cardbody">
                   <span class="cz-cardcat">${esc(c.icon||'')} ${esc(c.category)}</span>
                   <span class="cz-cardtitle">${esc(c.card)}</span>
@@ -1845,6 +1845,132 @@
 
           // 文字是預設模式 → 直接初始化
           window.__txtInit();
+        })();
+        </script>
+
+
+<style id="opt-style">
+.opt-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;align-items:start}
+@media(max-width:900px){.opt-grid{grid-template-columns:1fr}}
+.opt-card{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.opt-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.opt-title{font-weight:900;color:var(--ink);font-size:1rem;display:inline-flex;align-items:center;gap:7px}
+#optInput{width:100%;border:1px solid var(--line);border-radius:10px;padding:14px 15px;font:inherit;font-size:.95rem;line-height:1.7;min-height:150px;resize:vertical}
+#optInput:focus{outline:none;border-color:var(--primary-blue);box-shadow:0 0 0 3px var(--soft-blue)}
+.opt-go{width:100%;margin-top:14px;border:none;border-radius:12px;padding:15px;font-weight:900;font-size:1.05rem;color:#fff;cursor:pointer;background:linear-gradient(90deg,#7c3aed,#2563eb);transition:.15s}
+.opt-go:hover{filter:brightness(1.07)}
+.opt-go:disabled{opacity:.6;cursor:not-allowed}
+.opt-out{white-space:pre-wrap;line-height:1.75;font-size:.9rem;color:#33415a;min-height:120px;max-height:560px;overflow:auto;border-top:1px solid var(--line);padding-top:13px}
+.opt-ph{color:var(--muted);font-size:.88rem;line-height:1.7}
+.opt-mini{border:1px solid var(--line);background:#fff;color:var(--primary-blue);border-radius:999px;font-size:.78rem;font-weight:800;padding:5px 12px;cursor:pointer}
+.opt-tri{display:flex;gap:11px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}
+.opt-tri:last-child{border-bottom:none}
+.opt-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;color:#fff}
+.opt-tri b{display:block;color:var(--ink);font-size:.92rem;margin-bottom:3px}
+.opt-tri p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.6}
+.opt-tip{background:var(--soft-blue);border-radius:12px;padding:15px 17px}
+.opt-tip b{color:var(--primary-blue);font-size:.9rem}
+.opt-tip ul{margin:9px 0 0;padding-left:18px}
+.opt-tip li{font-size:.82rem;color:#46536a;line-height:1.65;margin-bottom:5px}
+.opt-err{color:#c0392b;font-size:.85rem;font-weight:800;margin-top:10px}
+</style>
+        <section id="opt" class="band tool-band" style="display:none">
+            <div class="section-inner">
+                <div class="tool-shell">
+                    <div class="tool-header">
+                        <div>
+                            <h2>✨ 黃金提示詞優化師</h2>
+                            <p>把你腦中亂亂的想法直接丟進來,AI 依「黃金三角」自動補成<strong>角色 × 情境 × 期望</strong>的專業提示詞,複製就能用。</p>
+                        </div>
+                    </div>
+                    <div class="opt-grid">
+                        <div>
+                            <div class="opt-card">
+                                <div class="opt-head">
+                                    <span class="opt-title">🎯 你的原始想法</span>
+                                    <button class="opt-mini" id="optClear">清除</button>
+                                </div>
+                                <textarea id="optInput" maxlength="1000" placeholder="想到什麼就打什麼,不用寫得漂亮。例如:我是一位綠能公司的業務主管,想跟泰國潛在客戶做業務拜訪,我泰文不好但希望對方覺得有誠意,所以想用泰文寫,對方是華裔泰國創辦人,做倉儲多年…"></textarea>
+                                <button class="opt-go" id="optGo">✨ 一鍵優化 Prompt</button>
+                                <div class="opt-err" id="optErr" style="display:none"></div>
+                            </div>
+                            <div class="opt-card">
+                                <div class="opt-head">
+                                    <span class="opt-title">🪄 優化成果</span>
+                                    <button class="opt-mini" id="optCopy" style="display:none">📋 複製內容</button>
+                                </div>
+                                <div class="opt-out" id="optOut"><div class="opt-ph">優化後的提示詞會出現在這裡。<br>左邊填你的想法 → 按「一鍵優化」。</div></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="opt-card">
+                                <div class="opt-title" style="margin-bottom:6px">💡 為什麼需要優化?</div>
+                                <p style="font-size:.85rem;color:var(--muted);line-height:1.7;margin:0 0 6px">AI 就像一個聽話但需要明確指令的實習生。如果你只說「寫一封信」,它會不知所措。用阿峰老師的<strong>黃金三角</strong>,就能讓 AI 瞬間變成資深專家。</p>
+                                <div class="opt-tri"><span class="opt-ico" style="background:#2563eb">1</span><div><b>角色 (Role)</b><p>告訴 AI「你是誰」。讓它 cosplay 專家,腦袋會自動連到該領域的專業知識庫。</p></div></div>
+                                <div class="opt-tri"><span class="opt-ico" style="background:#7c3aed">2</span><div><b>情境 (Context)</b><p>提供背景資訊。5W1H 越清楚,AI 越不會胡說八道。</p></div></div>
+                                <div class="opt-tri"><span class="opt-ico" style="background:#0f9f6e">3</span><div><b>期望 (Expectation)</b><p>限制輸出格式。要表格?列點?還是溫柔的語氣?明確告訴它,減少來回修改。</p></div></div>
+                            </div>
+                            <div class="opt-tip">
+                                <b>💡 使用小撇步</b>
+                                <ul>
+                                    <li>越複雜的任務,優化效果越明顯。</li>
+                                    <li>可以試著輸入:「幫我寫減肥菜單」,看看 AI 幫你補了什麼情境。</li>
+                                    <li>優化後的結果也可以自己再微調。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-cta">
+                        <p>想把這套黃金三角變成公司內部的提示詞規範或培訓課程?</p>
+                        <a href="#contact" class="btn-quiet"><i class="bi bi-arrow-right-short"></i>討論企業導入</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="cz-toastwrap" id="optToast" aria-live="polite"></div>
+        <script>
+        (function(){
+          "use strict";
+          const $ = s => document.querySelector(s);
+          const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+          const inp=$('#optInput'), go=$('#optGo'), out=$('#optOut'), err=$('#optErr'), copy=$('#optCopy');
+          let result='';
+          function showErr(m){ err.textContent=m; err.style.display=m?'':'none'; }
+          function toast(t){
+            const w=$('#optToast'); const el=document.createElement('div');
+            el.className='cz-toast'; el.innerHTML='<span>✅</span><span>'+esc(t)+'</span>';
+            w.appendChild(el); requestAnimationFrame(()=>el.classList.add('show'));
+            setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),300); },3000);
+          }
+          go.addEventListener('click', async ()=>{
+            const prompt=(inp.value||'').trim();
+            showErr('');
+            if(!prompt){ showErr('請先輸入你的原始想法'); inp.focus(); return; }
+            go.disabled=true; go.textContent='⏳ AI 優化中…(約 10-20 秒)';
+            out.innerHTML='<div class="opt-ph">AI 正在依黃金三角拆解你的想法…</div>';
+            copy.style.display='none';
+            try{
+              const r=await fetch('/api/optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+              const d=await r.json().catch(()=>({error:'回應格式錯誤'}));
+              if(!r.ok || d.error){ throw new Error(d.error||('伺服器錯誤 '+r.status)); }
+              result=d.optimized||'';
+              out.textContent=result;
+              copy.style.display='';
+            }catch(e){
+              out.innerHTML='<div class="opt-ph">優化失敗,請稍後再試一次。</div>';
+              showErr(e.message||'優化失敗,請稍後再試');
+            }finally{
+              go.disabled=false; go.textContent='✨ 一鍵優化 Prompt';
+            }
+          });
+          copy.addEventListener('click', ()=>{
+            if(!result) return;
+            const done=()=>toast('已複製,去 ChatGPT／Claude／Gemini 貼上');
+            if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(result).then(done).catch(fb); } else fb();
+            function fb(){ try{ const t=document.createElement('textarea'); t.value=result; t.style.position='fixed'; t.style.top='-1000px'; document.body.appendChild(t); t.focus(); t.select(); document.execCommand('copy'); document.body.removeChild(t); done(); }catch(e){} }
+          });
+          $('#optClear').addEventListener('click', ()=>{ inp.value=''; showErr(''); out.innerHTML='<div class="opt-ph">優化後的提示詞會出現在這裡。<br>左邊填你的想法 → 按「一鍵優化」。</div>'; copy.style.display='none'; result=''; inp.focus(); });
+          inp.addEventListener('keydown', e=>{ if((e.metaKey||e.ctrlKey) && e.key==='Enter') go.click(); });
         })();
         </script>
 
