@@ -1965,11 +1965,11 @@ window.__loadTemplatesJSON = window.__loadTemplatesJSON || (function(){
                     <summary>查看學員與課程見證影片</summary>
                     <div class="accordion-body">
                         <div class="video-grid">
-                            <div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/FBIRyZjBLTE" title="學員見證影片 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-                            <div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/X3nILy__5Uo" title="學員見證影片 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-                            <div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/7SNi9iGwuI0" title="學員見證影片 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-                            <div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/ZiJ7qPxjPes" title="課程見證影片 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-                            <div class="ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/Eg4rLnLGn8Q" title="課程見證影片 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                            <div class="ratio ratio-16x9"><button type="button" class="yt-lazy" data-yt="FBIRyZjBLTE" aria-label="播放影片:學員見證影片 1"><img src="assets/video/FBIRyZjBLTE.jpg" alt="學員見證影片 1" loading="lazy" decoding="async"><span class="yt-lazy-play" aria-hidden="true"></span></button></div>
+                            <div class="ratio ratio-16x9"><button type="button" class="yt-lazy" data-yt="X3nILy__5Uo" aria-label="播放影片:學員見證影片 2"><img src="assets/video/X3nILy__5Uo.jpg" alt="學員見證影片 2" loading="lazy" decoding="async"><span class="yt-lazy-play" aria-hidden="true"></span></button></div>
+                            <div class="ratio ratio-16x9"><button type="button" class="yt-lazy" data-yt="7SNi9iGwuI0" aria-label="播放影片:學員見證影片 3"><img src="assets/video/7SNi9iGwuI0.jpg" alt="學員見證影片 3" loading="lazy" decoding="async"><span class="yt-lazy-play" aria-hidden="true"></span></button></div>
+                            <div class="ratio ratio-16x9"><button type="button" class="yt-lazy" data-yt="ZiJ7qPxjPes" aria-label="播放影片:課程見證影片 1"><img src="assets/video/ZiJ7qPxjPes.jpg" alt="課程見證影片 1" loading="lazy" decoding="async"><span class="yt-lazy-play" aria-hidden="true"></span></button></div>
+                            <div class="ratio ratio-16x9"><button type="button" class="yt-lazy" data-yt="Eg4rLnLGn8Q" aria-label="播放影片:課程見證影片 2"><img src="assets/video/Eg4rLnLGn8Q.jpg" alt="課程見證影片 2" loading="lazy" decoding="async"><span class="yt-lazy-play" aria-hidden="true"></span></button></div>
                         </div>
                     </div>
                 </details>
@@ -2568,5 +2568,39 @@ ${promptText.trim()}
 <!-- ==================== 會計財務 Templates ==================== -->
 <!-- 將本區塊放在原提示詞產生器 HTML 的 </body> 前即可被既有 JS 自動讀取 -->
 
+
+<style id="yt-lazy-style">
+/* 2026-09-05:見證影片原本開頁就載 5 個 YouTube 播放器(各 2.5-2.7 秒),
+   改成先顯示縮圖,點了才把真的 iframe 換上去 */
+.yt-lazy{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;
+  cursor:pointer;background:#000;overflow:hidden;display:block;border-radius:inherit}
+.yt-lazy img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .3s ease,opacity .3s ease}
+.yt-lazy:hover img,.yt-lazy:focus-visible img{transform:scale(1.03);opacity:.85}
+.yt-lazy-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:66px;height:46px;border-radius:12px;background:rgba(18,18,18,.78);
+  transition:background .2s ease}
+.yt-lazy-play::after{content:"";position:absolute;top:50%;left:52%;
+  transform:translate(-50%,-50%);border-style:solid;border-width:11px 0 11px 19px;
+  border-color:transparent transparent transparent #fff}
+.yt-lazy:hover .yt-lazy-play,.yt-lazy:focus-visible .yt-lazy-play{background:#FF0000}
+.yt-lazy:focus-visible{outline:3px solid #0099BB;outline-offset:2px}
+</style>
+<script>
+/* 點縮圖才載入 YouTube 播放器;鍵盤 Enter/Space 也能觸發(button 原生行為) */
+document.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('.yt-lazy');
+  if(!b) return;
+  var id = b.getAttribute('data-yt');
+  if(!id) return;
+  var f = document.createElement('iframe');
+  f.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1';
+  f.title = b.getAttribute('aria-label') || 'YouTube 影片';
+  f.setAttribute('frameborder','0');
+  f.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+  f.setAttribute('allowfullscreen','');
+  b.replaceWith(f);
+});
+</script>
 </body>
 </html>
