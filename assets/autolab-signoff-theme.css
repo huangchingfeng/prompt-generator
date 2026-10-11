@@ -1,0 +1,281 @@
+/* ============================================================
+   Autolab Sign-Off 工具站換膚層 v1（2026-10-11 社群總部）
+   用法：放在站內 assets/，<head> 最後一行加
+     <link rel="stylesheet" href="assets/autolab-signoff-theme.css">
+   適用：insurance / prompt / ltc 共用的「提示詞產生器」模板（Bootstrap 5 + .site-nav + .afeng-eco-bar）
+   規範：logo-signoff/02-品牌核心.md
+     主色青 #00708A、墨 #1C1C1E、次文字 #636366、霧 #F5F5F7
+     活潑用社群配色 A：芒果金 #FFC233（上面只放墨字）、蘭花洋紅 #9C2A6B（白字）、淺芒果 #FFD166
+     橘 #FF6B35 只給「預約／聊內訓」鈕，實心色塊、墨字、不加光暈、不畫橘圈
+   只覆蓋外觀，不動任何功能；拿掉這行 link 就回到舊樣子。
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap");
+
+:root {
+  --so-teal: #00708A;
+  --so-teal-dk: #005A6F;
+  --so-teal-lt: #E8F4F6;
+  --so-ink: #1C1C1E;
+  --so-sub: #636366;
+  --so-mist: #F5F5F7;
+  --so-line: #E5E5EA;
+  --so-mango: #FFC233;
+  --so-mango-lt: #FFF1D6;
+  --so-orchid: #9C2A6B;
+  --so-orchid-lt: #F6E6F0;
+  --so-orange: #FF6B35;
+
+  /* 接管模板原本的變數 */
+  --primary-blue: var(--so-teal);
+  --dark-blue: var(--so-teal-dk);
+  --accent-green: var(--so-teal);
+  --ink: var(--so-ink);
+  --muted: var(--so-sub);
+  --line: var(--so-line);
+  --bg-light: var(--so-mist);
+  --surface: #FFFFFF;
+  --soft-blue: var(--so-teal-lt);
+  --soft-green: var(--so-teal-lt);
+  --shadow: none;
+  --radius: 4px;
+  --bs-primary: #00708A;
+  --bs-primary-rgb: 0, 112, 138;
+  --bs-link-color: #00708A;
+  --bs-link-hover-color: #005A6F;
+  --bs-font-sans-serif: "Inter", "Noto Sans TC", system-ui, -apple-system, "PingFang TC", sans-serif;
+}
+
+html body {
+  font-family: "Inter", "Noto Sans TC", system-ui, -apple-system, "PingFang TC", sans-serif;
+  color: var(--so-ink);
+  background: #FFFFFF;
+}
+html body h1, html body h2, html body h3, html body h4,
+html body .hero-title, html body .section-heading h2, html body .tool-header h2 {
+  font-family: "Inter Tight", "Noto Sans TC", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- 兄弟工具列：深藍膠囊 → 白底細線、方角 ---------- */
+html body .afeng-eco-bar {
+  --eco-accent: var(--so-teal);
+  background: #FFFFFF;
+  color: var(--so-ink);
+  border-bottom: 1px solid var(--so-line);
+  box-shadow: none;
+}
+html body .afeng-eco-bar .ae-brand { color: var(--so-ink); }
+html body .afeng-eco-bar .ae-brand small { color: var(--so-sub); }
+html body .afeng-eco-bar .ae-brand .ae-dot {
+  width: 22px; height: 22px; border-radius: 0; box-shadow: none;
+  background: url("autolab-icon-32.svg") center / contain no-repeat;
+}
+html body .afeng-eco-bar .ae-item {
+  color: var(--so-ink);
+  background: var(--so-mist);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  min-height: 36px;
+}
+html body .afeng-eco-bar .ae-item:hover {
+  color: var(--so-teal);
+  background: var(--so-teal-lt);
+  border-color: var(--so-teal);
+}
+html body .afeng-eco-bar .ae-item.ae-active,
+html body .afeng-eco-bar[data-active] a.ae-item[data-key][aria-current],
+html body .afeng-eco-bar[data-active="insurance-allinone"] a[data-key="insurance-allinone"],
+html body .afeng-eco-bar[data-active="prompt-generator"] a[data-key="prompt-generator"],
+html body .afeng-eco-bar[data-active="long-term-care-allinone"] a[data-key="long-term-care-allinone"],
+html body .afeng-eco-bar[data-active="export-sales-ai"] a[data-key="export-sales-ai"] {
+  color: #FFFFFF;
+  background: var(--so-teal);
+  border-color: var(--so-teal);
+  box-shadow: none;
+}
+html body .afeng-eco-bar .ae-fade { background: linear-gradient(90deg, rgba(255,255,255,0), #FFFFFF 86%); }
+/* 唯一的橘：聊內訓（預約）。實心、墨字、無光暈 */
+html body .afeng-eco-bar .ae-cta {
+  color: var(--so-ink);
+  background: var(--so-orange);
+  border-radius: 4px;
+  box-shadow: none;
+}
+html body .afeng-eco-bar .ae-line {
+  border-radius: 4px;
+  background: #06C755;
+}
+
+/* ---------- 站內頁首 ---------- */
+html body .site-nav {
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid var(--so-line);
+  box-shadow: none;
+}
+html body .brand-mark {
+  background: url("autolab-icon-64.svg") center / contain no-repeat;
+  border-radius: 0;
+  box-shadow: none;
+}
+html body .brand-mark i { visibility: hidden; }
+html body .brand-lockup strong { color: var(--so-ink); font-weight: 900; }
+html body .brand-lockup small { color: var(--so-sub); font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .02em; }
+html body .nav-links a { color: var(--so-ink); border-radius: 4px; }
+html body .nav-links a:hover { color: var(--so-teal); background: transparent; }
+html body .nav-cta {
+  background: var(--so-ink) !important;
+  color: #FFFFFF !important;
+  border-radius: 4px !important;
+}
+html body .nav-cta:hover { background: var(--so-teal) !important; }
+
+/* ---------- Hero：白底＋簽名線＋章壓線 ----------
+   工具站 hero 右邊有入口卡，線放在 62% 會穿過內文，所以改放 hero 底部、章壓在線上靠右。 */
+html body .hero-band {
+  position: relative;
+  background: #FFFFFF;
+  border-bottom: 0;
+  padding-bottom: 56px;
+}
+html body .hero-band::before {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 36px;
+  height: 3px; background: var(--so-ink);
+  pointer-events: none;
+}
+html body .hero-band::after {
+  content: "";
+  position: absolute; right: max(24px, calc((100% - 1180px) / 2));
+  bottom: 37.5px; width: 72px; height: 72px;
+  transform: translateY(50%);
+  background: #FFFFFF url("autolab-icon-64.svg") center / contain no-repeat;
+  border-radius: 50%;
+  pointer-events: none;
+}
+html body .hero-grid { position: relative; z-index: 1; }
+html body .hero-kicker {
+  display: inline-flex;
+  color: var(--so-ink);
+  background: var(--so-mango);
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-family: "JetBrains Mono", "Noto Sans TC", monospace;
+  font-weight: 700;
+}
+html body .hero-kicker i { color: var(--so-ink); }
+html body .hero-title { color: var(--so-ink); font-weight: 900; }
+html body .hero-copy { color: var(--so-sub); background: #FFFFFF; }
+
+html body .btn-main {
+  background: var(--so-teal);
+  color: #FFFFFF;
+  border: 2px solid var(--so-teal);
+  border-radius: 4px;
+  box-shadow: none;
+}
+html body .btn-main:hover { background: var(--so-teal-dk); border-color: var(--so-teal-dk); color: #FFFFFF; }
+html body .btn-quiet {
+  background: #FFFFFF;
+  color: var(--so-ink);
+  border: 2px solid var(--so-ink);
+  border-radius: 4px;
+}
+html body .btn-quiet:hover { color: var(--so-teal); border-color: var(--so-teal); }
+
+/* 右側入口卡＋三個數字：用社群三色當色條，活潑但不吵 */
+html body .hero-panel,
+html body .tool-shell, html body .work-panel, html body .template-sidebar,
+html body .trust-card, html body .contact-card {
+  border: 1px solid var(--so-line);
+  border-radius: 4px;
+  box-shadow: none;
+}
+html body .hero-panel { background: #FFFFFF; }
+html body .entry-card { border-radius: 4px; border: 1px solid var(--so-line); border-left: 4px solid var(--so-teal); }
+html body .entry-card + .entry-card { border-left-color: var(--so-orchid); }
+html body .entry-card:hover { border-color: var(--so-teal); background: var(--so-teal-lt); box-shadow: none; transform: none; }
+html body .entry-icon { background: var(--so-teal-lt); color: var(--so-teal); border-radius: 4px; }
+html body .entry-card + .entry-card .entry-icon { background: var(--so-orchid-lt); color: var(--so-orchid); }
+html body .metric { border-radius: 4px; background: var(--so-mist); border-top: 4px solid var(--so-teal); }
+html body .metric:nth-child(2) { border-top-color: var(--so-mango); }
+html body .metric:nth-child(3) { border-top-color: var(--so-orchid); }
+html body .metric strong { color: var(--so-ink); font-family: "Inter Tight", sans-serif; font-weight: 800; }
+
+/* ---------- 工具區 ---------- */
+html body .tool-band, html body .brand-band { background: var(--so-mist); }
+html body .tool-shell { background: #FFFFFF; }
+html body .count-pill { background: var(--so-mango); color: var(--so-ink); border-radius: 2px; }
+html body .search-field input,
+html body .prompt-input, html body .template-select-fallback,
+html body .recommender-input textarea {
+  border-radius: 4px;
+  border-color: #C7C7CC;
+}
+html body .search-field input:focus, html body .template-select-fallback:focus, html body .prompt-input:focus,
+html body .recommender-input textarea:focus {
+  border-color: var(--so-teal);
+  box-shadow: 0 0 0 3px rgba(0,112,138,.15);
+}
+html body .filter-btn, html body .axis-btn, html body .cz-tab, html body .cz-set {
+  border-radius: 4px;
+}
+html body .filter-btn.active, html body .axis-btn.active, html body .cz-tab.active, html body .cz-set.active {
+  background: var(--so-ink);
+  border-color: var(--so-ink);
+  color: #FFFFFF;
+}
+html body .template-list-item { border-radius: 4px; border-color: var(--so-line); }
+html body .template-list-item:hover { border-color: var(--so-teal); background: #FFFFFF; }
+html body .template-list-item.active { border-color: var(--so-teal); background: var(--so-teal-lt); box-shadow: inset 4px 0 0 var(--so-teal); }
+html body .template-category { color: var(--so-teal); }
+html body .meta-tag { border-radius: 2px; background: var(--so-teal-lt); color: var(--so-teal); }
+html body .btn-tool { border-radius: 4px; }
+html body .btn-tool.primary { background: var(--so-teal); border-color: var(--so-teal); color: #FFFFFF; }
+html body .btn-tool.primary:hover { background: var(--so-teal-dk); }
+html body .output-container { border-radius: 4px; }
+html body .tool-cta { border-radius: 4px; background: var(--so-mango-lt); border: 1px solid var(--so-mango); }
+html body .reco-item { border-radius: 4px; }
+html body .reco-item-go { color: var(--so-teal); }
+
+/* 模式切換（文案／出圖／研究／微系統…） */
+html body .cz-mode-band { background: #FFFFFF; }
+html body .cz-modeswitch { background: var(--so-mist); border-radius: 4px; }
+html body .cz-mode { border-radius: 4px; color: var(--so-sub); }
+html body .cz-mode.active {
+  background: #FFFFFF;
+  color: var(--so-ink);
+  box-shadow: inset 0 -4px 0 var(--so-teal);
+}
+
+/* 模板卡片（文案／出圖／微系統共用 .cz-card） */
+html body .cz-card { border-radius: 4px; border-color: var(--so-line); box-shadow: inset 0 3px 0 var(--so-line); }
+html body .cz-card:hover { border-color: var(--so-teal); box-shadow: inset 0 3px 0 var(--so-teal); transform: none; }
+html body .cz-cardcat { color: var(--so-teal); font-family: "JetBrains Mono", "Noto Sans TC", monospace; letter-spacing: .02em; }
+html body .tool-header h2 { box-shadow: inset 0 -8px 0 var(--so-mango); display: inline-flex; padding: 0 2px; }
+
+/* 卡片類 */
+html body .resource-tile, html body .proof-item, html body .showcase-item,
+html body .brand-accordion, html body .client-logo { border-radius: 4px; box-shadow: none; }
+html body .resource-tile i { color: var(--so-teal); }
+html body .proof-item strong { color: var(--so-ink); font-family: "Inter Tight", sans-serif; }
+html body .teacher-photo { border-radius: 4px; }
+html body .section-heading h2 { color: var(--so-ink); font-weight: 900; }
+
+/* 聯絡區：墨底，橘只留給一顆預約鈕（模板原本的主鈕維持青色） */
+html body .contact-card { background: var(--so-ink); color: #FFFFFF; border-color: var(--so-ink); }
+html body .contact-card h2 { color: #FFFFFF; }
+html body .contact-card p { color: #C7C7CC; }
+html body .contact-card .btn-quiet { background: transparent; color: #FFFFFF; border-color: #FFFFFF; }
+
+/* Bootstrap 殘留的藍 */
+html body .btn-primary { --bs-btn-bg: #00708A; --bs-btn-border-color: #00708A; --bs-btn-hover-bg: #005A6F; --bs-btn-hover-border-color: #005A6F; --bs-btn-active-bg: #005A6F; border-radius: 4px; }
+html body .text-primary { color: #00708A !important; }
+html body .bg-primary { background-color: #00708A !important; }
+html body .toast-status { border-radius: 4px; }
+
+@media (max-width: 760px) {
+  html body .hero-band::after { width: 48px; height: 48px; right: 16px; }
+  html body .hero-band::before { bottom: 30px; }
+  html body .hero-band::after { bottom: 31.5px; }
+}
